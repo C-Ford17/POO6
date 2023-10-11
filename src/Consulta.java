@@ -1,9 +1,9 @@
 import java.util.*;
 
 public abstract class Consulta implements  Cloneable{
-    private String titulo;
+    private final String titulo;
     private List<Elector> censo;
-    private int nPreguntas;
+    private final int nPreguntas;
     private String[] preguntas;
     private boolean preparada;
     private Map<Integer,List<Respuesta>> votos;
@@ -38,8 +38,7 @@ public abstract class Consulta implements  Cloneable{
     }
 
     public boolean isPreparada() {
-        if (this.preguntas.length == nPreguntas) return true;
-        return false;
+        return this.preguntas.length == nPreguntas;
     }
 
     public String getTitulo() {
@@ -75,7 +74,7 @@ public abstract class Consulta implements  Cloneable{
     }
 
     public Elector getElectorDni(int dni){
-        return this.censo.stream().filter(elector -> elector.getDni() == dni)
+        return this.censo.stream().filter(elector -> elector.dni() == dni)
                 .findFirst().orElse(null);
     }
 
@@ -88,7 +87,7 @@ public abstract class Consulta implements  Cloneable{
     }
 
     public boolean electorEnCenso(int dni){
-        return this.censo.stream().anyMatch(elector -> elector.getDni() == dni);
+        return this.censo.stream().anyMatch(elector -> elector.dni() == dni);
     }
 
     public boolean electorVoto(int dni){
@@ -132,7 +131,7 @@ public abstract class Consulta implements  Cloneable{
     public Consulta clone() throws CloneNotSupportedException {
         Consulta clone = (Consulta) super.clone();
         clone.censo.clear();
-        censo.stream().forEach(elector -> {
+        censo.forEach(elector -> {
             try {
                 clone.censo.add(elector.clone());
             } catch (CloneNotSupportedException e) {

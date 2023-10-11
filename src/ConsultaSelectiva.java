@@ -1,12 +1,11 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class ConsultaSelectiva extends Consulta{
-    private LocalDate fechaUmbral;
+    private final LocalDate fechaUmbral;
     private LocalDate fechaCelebracion;
     private List<Integer> preguntasCondicionadas;
 
@@ -22,7 +21,7 @@ public class ConsultaSelectiva extends Consulta{
     }
 
     public List<Elector> censoAutorizado() {
-        return getCenso().stream().filter(elector -> elector.getFechaNacimiento().isBefore(fechaUmbral))
+        return getCenso().stream().filter(elector -> elector.fechaNacimiento().isBefore(fechaUmbral))
                 .collect(Collectors.toList());
     }
 
@@ -38,21 +37,10 @@ public class ConsultaSelectiva extends Consulta{
         }
         return false;
     }
-    /*
-    public void numerosCondicionados(int... numeros) {
-        for (int i = 0; i < getPreguntas().length; i++) {
-            if (getPreguntas()[i] != null){
-                for (int num:numeros) {
-                    if (num-1 == i) preguntasCondicionadas.add(num);
-                }
-            }
-        }
-    }*/
 
     public void preguntasCondicionadas(int... numeros) {
         preguntasCondicionadas.addAll(IntStream.of(numeros)
                 .filter(num -> num > 0 && num <= getnPreguntas())
-                .map(num -> num)
                 .filter(i -> getPreguntas()[i] != null)
                 .boxed()
                 .toList());
@@ -60,7 +48,7 @@ public class ConsultaSelectiva extends Consulta{
 
     @Override
     public boolean votar(int dni, List<Respuesta> respuestas) {
-        if (getElectorDni(dni).getFechaNacimiento().isAfter(fechaUmbral)){
+        if (getElectorDni(dni).fechaNacimiento().isAfter(fechaUmbral)){
             boolean comprobar = preguntasCondicionadas.stream()
                     .map(respuestas::get)
                     .allMatch(Respuesta.EN_BLANCO::equals);
